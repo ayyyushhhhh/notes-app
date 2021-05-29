@@ -68,12 +68,12 @@ class _NotesScreenState extends State<NotesScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => AddNotesScreen(
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return AddNotesScreen(
                     note: notes[index],
                     bloc: bloc,
-                  ),
-                ),
+                  );
+                }),
               );
             },
             child: _notesContainer(notes[index]));
@@ -86,7 +86,7 @@ class _NotesScreenState extends State<NotesScreen> {
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.blue,
+        color: Color(int.parse(note.color)),
       ),
       child: Text(
         note.title,

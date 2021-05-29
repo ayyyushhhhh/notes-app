@@ -30,7 +30,7 @@ class NotesBloc {
     getAllNotes();
   }
 
-  void deleteNote(int id) async {
+  Future<void> deleteNote(int id) async {
     await NotesDatabase.instance.delete(id);
     getAllNotes();
   }

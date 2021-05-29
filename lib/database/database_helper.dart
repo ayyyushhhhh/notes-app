@@ -40,7 +40,8 @@ class NotesDatabase {
       ${NotesField.id} $idType,
       ${NotesField.title} $textType,
       ${NotesField.dateTime} $textType,
-      ${NotesField.description} $textType
+      ${NotesField.description} $textType,
+      ${NotesField.color} $textType
     )
     ''');
   }

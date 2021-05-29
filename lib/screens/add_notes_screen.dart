@@ -14,6 +14,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
   String title = "";
   String description = "";
   String? dateTime;
+  String? color = "0xFF0000FF";
 
   @override
   void initState() {
@@ -21,6 +22,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
     if (widget.note != null) {
       title = widget.note!.title;
       description = widget.note!.description;
+      color = widget.note!.color;
     }
   }
 
@@ -28,22 +30,73 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
     Notes note = Notes(
         title: title.toString(),
         dateTime: DateTime.now().toIso8601String(),
-        description: description.toString());
+        description: description.toString(),
+        color: color.toString());
     await widget.bloc.addNewNote(note);
   }
 
   void _updateDatabase() async {
-    final note = widget.note!.updateWith(
+    final updatedNote = widget.note!.updateWith(
         title: title.toString(),
         description: description.toString(),
-        dateTime: DateTime.now().toIso8601String());
-    await widget.bloc.updateNewNote(note);
+        dateTime: DateTime.now().toIso8601String(),
+        color: color.toString());
+    await widget.bloc.updateNewNote(updatedNote);
+  }
+
+  void _deleteDatabase() async {
+    if (widget.note != null) {
+      await widget.bloc.deleteNote(widget.note!.id!);
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  void _showBottomModal(BuildContext scaffoldContext) {
+    showModalBottomSheet(
+        context: scaffoldContext,
+        isDismissible: true,
+        builder: (BuildContext context) {
+          return Container(
+            height: MediaQuery.of(scaffoldContext).size.height,
+            margin: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    "Select Colour",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                  ),
+                ),
+                _buildColor(0xFF000080),
+                _buildColor(0xFF000000),
+                _buildColor(0xFFFF0000),
+                _buildColor(0xFFFF6347),
+              ],
+            ),
+          );
+        });
+  }
+
+  Widget _buildColor(int colorCode) {
+    return Flexible(
+      child: ListTile(
+        onTap: () {
+          setState(() {
+            color = colorCode.toString();
+          });
+        },
+        tileColor: Color(colorCode),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(int.tryParse(color.toString())!),
         actions: [
           IconButton(
             onPressed: () async {
@@ -55,6 +108,21 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
               Navigator.pop(context);
             },
             icon: Icon(Icons.done),
+          ),
+          IconButton(
+            onPressed: () {
+              _deleteDatabase();
+              if (widget.note != null) {
+                Navigator.pop(context);
+              }
+            },
+            icon: Icon(Icons.delete),
+          ),
+          IconButton(
+            onPressed: () {
+              _showBottomModal(context);
+            },
+            icon: Icon(Icons.more_vert),
           ),
         ],
       ),
