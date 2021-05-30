@@ -25,12 +25,22 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_staggered_grid_view: ^0.4.0
+  flutter_svg: ^0.22.0
+  intl: ^0.17.0
   path: ^1.8.0
   sqflite: ^2.0.0+3
+  flutter_native_splash: ^1.1.8+4
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "assets/images/splashscreen.png"
+  android: true
+  ios: true
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  change_app_package_name: ^1.0.0  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -41,8 +51,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -53,10 +63,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: San Francisco
+      fonts:
+        - asset: fonts/SFUIText-Regular.otf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

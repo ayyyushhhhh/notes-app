@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:notes_app/bloc/notes_bloc.dart';
 import 'package:notes_app/model/notes_model.dart';
 
@@ -13,8 +14,8 @@ class AddNotesScreen extends StatefulWidget {
 class _AddNotesScreenState extends State<AddNotesScreen> {
   String title = "";
   String description = "";
-  String? dateTime;
-  String? color = "0xFF0000FF";
+  String dateTime = DateTime.now().toString();
+  String color = "0xFF0000FF";
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
       title = widget.note!.title;
       description = widget.note!.description;
       color = widget.note!.color;
+      dateTime = widget.note!.dateTime;
     }
   }
 
@@ -60,7 +62,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
           return Container(
             height: MediaQuery.of(scaffoldContext).size.height,
             margin: EdgeInsets.all(10),
-            child: Column(
+            child: ListView(
               children: [
                 Align(
                   alignment: Alignment.topLeft,
@@ -69,10 +71,12 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                   ),
                 ),
-                _buildColor(0xFF000080),
-                _buildColor(0xFF000000),
-                _buildColor(0xFFFF0000),
-                _buildColor(0xFFFF6347),
+                _buildColor(0xFF59bd73),
+                _buildColor(0xFF59bdac),
+                _buildColor(0xFFaed4cd),
+                _buildColor(0xFFb1cae6),
+                _buildColor(0xFFcc98d4),
+                _buildColor(0xFFd498bb),
               ],
             ),
           );
@@ -80,15 +84,14 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
   }
 
   Widget _buildColor(int colorCode) {
-    return Flexible(
-      child: ListTile(
-        onTap: () {
-          setState(() {
-            color = colorCode.toString();
-          });
-        },
-        tileColor: Color(colorCode),
-      ),
+    return ListTile(
+      contentPadding: EdgeInsets.all(10),
+      onTap: () {
+        setState(() {
+          color = colorCode.toString();
+        });
+      },
+      tileColor: Color(colorCode),
     );
   }
 
@@ -137,6 +140,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
                 onChanged: (value) {
                   title = value;
                 },
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: InputDecoration(
@@ -146,9 +150,10 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
                   border: InputBorder.none,
                 ),
               ),
-              SizedBox(
-                height: 3,
-              ),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                      "Last Edited : ${DateFormat("dd-MM-yyyy H : m").format(DateTime.parse(dateTime))}")),
               TextField(
                 controller: TextEditingController()
                   ..text = description.toString(),

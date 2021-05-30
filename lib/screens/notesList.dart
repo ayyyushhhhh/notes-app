@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notes_app/bloc/notes_bloc.dart';
 import 'package:notes_app/model/notes_model.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:notes_app/screens/add_notes_screen.dart';
+import 'package:notes_app/screens/search_for_notes.dart';
+import 'package:notes_app/widgets/StaggeredGridView_widget.dart';
 
 class NotesScreen extends StatefulWidget {
   @override
@@ -10,12 +12,11 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  List<Notes> allNotes = [];
+  late List<Notes> notes;
   NotesBloc bloc = NotesBloc();
   @override
   void initState() {
     super.initState();
-    // _refreshAllNotes();
   }
 
   @override
@@ -23,76 +24,94 @@ class _NotesScreenState extends State<NotesScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.all(10),
-        child: StreamBuilder(
-          stream: bloc.getNotesStream,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasData) {
-              return _buildAllNotes(snapshot.data);
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => AddNotesScreen(
-                bloc: bloc,
-              ),
-            ),
-          );
-        },
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _buildAllNotes(List<Notes> notes) {
-    return StaggeredGridView.countBuilder(
-      itemCount: notes.length,
-      staggeredTileBuilder: (int index) {
-        return StaggeredTile.count(1, index.isEven ? 1.2 : 1.8);
-      },
-      crossAxisCount: 2,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 12,
-      itemBuilder: (BuildContext context, int index) {
-        return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) {
-                  return AddNotesScreen(
-                    note: notes[index],
-                    bloc: bloc,
-                  );
-                }),
-              );
-            },
-            child: _notesContainer(notes[index]));
-      },
-    );
-  }
-
-  Container _notesContainer(Notes note) {
+  Widget _searchNotes() {
     return Container(
+      height: MediaQuery.of(context).size.height / 12,
+      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Color(int.parse(note.color)),
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.black12,
       ),
-      child: Text(
-        note.title,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 30,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) {
+              return NotesSearch(
+                notes: notes,
+                bloc: bloc,
+              );
+            }),
+          );
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Search For Notes"),
+            Icon(Icons.search),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          child: StreamBuilder(
+            stream: bloc.getNotesStream,
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                notes = snapshot.data;
+                if (notes.length == 0) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Nothing Here",
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height / 3,
+                        child: SvgPicture.asset("assets/images/nothing.svg",
+                            semanticsLabel: 'Acme Logo'),
+                      )
+                    ],
+                  );
+                }
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _searchNotes(),
+                      buildAllNotes(notes: notes, bloc: bloc),
+                    ],
+                  ),
+                );
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => AddNotesScreen(
+                  bloc: bloc,
+                ),
+              ),
+            );
+          },
+          child: Icon(Icons.add),
         ),
       ),
     );
